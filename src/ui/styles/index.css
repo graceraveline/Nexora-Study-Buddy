@@ -1,0 +1,144 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Work Sans", sans-serif;
+  background: #f7f4ee;
+  color: #24211d;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.app {
+  min-height: 100vh;
+}
+
+.hero {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 64px 24px 32px;
+}
+
+.hero h1 {
+  margin: 0 0 12px;
+  font-family: "Source Serif 4", serif;
+  font-size: 48px;
+  font-weight: 600;
+}
+
+.hero p {
+  max-width: 650px;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.app__body {
+  display: flex;
+  gap: 32px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px 48px;
+}
+
+.app__main {
+  flex: 1;
+}
+
+.room-list__header,
+.room-view__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.room-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px;
+  margin-top: 12px;
+  background: white;
+  border: 1px solid #ddd7cd;
+  border-radius: 12px;
+}
+
+.room-card h3 {
+  margin: 0 0 6px;
+}
+
+.room-card p {
+  margin: 0 0 8px;
+}
+
+.room-card button,
+.room-list__header button,
+.room-view button {
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 8px;
+  background: #24211d;
+  color: white;
+}
+
+.room-card button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.room-view {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.room-view__card {
+  margin-top: 32px;
+  padding: 24px;
+  background: white;
+  border: 1px solid #ddd7cd;
+  border-radius: 12px;
+}
+
+.room-view__card li {
+  margin: 10px 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 32px;
+  border-bottom: 1px solid #ddd7cd;
+  background: #f7f4ee;
+}
+
+.header__mark {
+  font-family: "Source Serif 4", serif;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.header__user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.header__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #24211d;
+}
