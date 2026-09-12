@@ -63,7 +63,7 @@ export default function App() {
       ) : (
         <>
           <div className="hero">
-            <h1>Find your study buddy tonight.</h1>
+            <h1>Find your study buddy tonight! 📚</h1>
             <p>
               Search a course code, see who's already in a room for it, and
               join — a focused pair or a full group discussion, your call.
