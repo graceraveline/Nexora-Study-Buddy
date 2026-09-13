@@ -96,19 +96,19 @@ studibudbud/
 
 ### Sign In Page
 
-_Add a screenshot of the Study Buddy sign-in page here._
+![Study Buddy Sign In](assets/screenshots/signin.png)
 
 ### Study Rooms Page
 
-_Add a screenshot of the main study rooms page here._
+![Study Buddy Room Lists](assets/screenshots/room-lists.png)
 
 ### Study Room
 
-_Add a screenshot of a study room with chat here._
+![Study Buddy Study Room](assets/screenshots/study-room.png)
 
 ### Dark Mode
 
-_Add a screenshot of Study Buddy in dark mode here._
+![Study Buddy Dark Mode](assets/screenshots/dark-mode.png)
 
 ## Technologies
 

@@ -1155,3 +1155,333 @@ body:has(.app--dark) {
   border-color: #2b3447;
   color: #f2f4f8;
 }
+
+
+/* Discord connection page */
+
+.room-view--connection {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+}
+
+.connection-card {
+  width: 100%;
+  max-width: 560px;
+  padding: 42px;
+  background: #ffffff;
+  border: 1px solid #e5e9f2;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(23, 32, 51, 0.08);
+  text-align: center;
+}
+
+.connection-card__back {
+  display: block;
+  margin-bottom: 32px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #697389;
+  font-weight: 600;
+}
+
+.connection-card__back:hover {
+  color: #172033;
+}
+
+.connection-card__icon {
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  border-radius: 20px;
+  background: #eef0ff;
+  font-size: 32px;
+}
+
+.connection-card__eyebrow {
+  margin: 0 0 8px;
+  color: #667eea;
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.connection-card h1 {
+  margin: 0 0 14px;
+  color: #172033;
+  font-size: 2rem;
+}
+
+.connection-card__description {
+  max-width: 430px;
+  margin: 0 auto 28px;
+  color: #697389;
+  line-height: 1.7;
+}
+
+.connection-card__username {
+  padding: 20px;
+  margin-bottom: 20px;
+  background: #f5f7fb;
+  border: 1px solid #e5e9f2;
+  border-radius: 16px;
+}
+
+.connection-card__username span {
+  display: block;
+  margin-bottom: 8px;
+  color: #697389;
+  font-size: 0.85rem;
+}
+
+.connection-card__username strong {
+  color: #172033;
+  font-size: 1.25rem;
+}
+
+.connection-card__tip {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 16px;
+  margin-bottom: 24px;
+  background: #fafbff;
+  border-radius: 14px;
+  text-align: left;
+}
+
+.connection-card__tip span {
+  font-size: 1.1rem;
+}
+
+.connection-card__tip p {
+  margin: 0;
+  color: #697389;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.connection-card__button {
+  width: 100%;
+  padding: 13px 18px;
+  border: 0;
+  border-radius: 10px;
+  background: #172033;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.connection-card__button:hover {
+  background: #27334b;
+}
+
+.app--dark .connection-card {
+  background: #181e2c;
+  border-color: #2b3447;
+  box-shadow: none;
+}
+
+.app--dark .connection-card__back {
+  color: #a7b0c2;
+}
+
+.app--dark .connection-card__back:hover {
+  color: #f2f4f8;
+}
+
+.app--dark .connection-card__icon {
+  background: #252d45;
+}
+
+.app--dark .connection-card h1 {
+  color: #f2f4f8;
+}
+
+.app--dark .connection-card__description,
+.app--dark .connection-card__username span,
+.app--dark .connection-card__tip p {
+  color: #a7b0c2;
+}
+
+.app--dark .connection-card__username {
+  background: #111725;
+  border-color: #2b3447;
+}
+
+.app--dark .connection-card__username strong {
+  color: #f2f4f8;
+}
+
+.app--dark .connection-card__tip {
+  background: #20283a;
+}
+
+@media (max-width: 760px) {
+  .room-view--connection {
+    padding: 32px 16px;
+  }
+
+  .connection-card {
+    padding: 28px 20px;
+    border-radius: 20px;
+  }
+
+  .connection-card h1 {
+    font-size: 1.6rem;
+  }
+}
+
+.room-view__card button {
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 10px;
+  background: #172033;
+  color: #ffffff;
+  font-weight: 700;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.room-view__card button:hover {
+  background: #27334b;
+  transform: translateY(-1px);
+}
+
+.room-view__card button:active {
+  transform: translateY(0);
+}
+
+.app--dark .room-view__card button {
+  background: #667eea;
+}
+
+.app--dark .room-view__card button:hover {
+  background: #7889ef;
+}
+
+.connection-card__button {
+  border: 1px solid #dce2ed;
+}
+
+.app--dark .connection-card__button {
+  background: #667eea;
+  border: 1px solid #667eea;
+  color: #ffffff;
+}
+
+.app--dark .connection-card__button:hover {
+  background: #7889ef;
+  border-color: #7889ef;
+}
+
+/* PROFILE MENU */
+
+.header__profile {
+  position: relative;
+}
+
+.header__user {
+  border: 1px solid #e3dfd8;
+  background: #ffffff;
+  padding: 9px 14px;
+  border-radius: 999px;
+  color: #374151;
+  transition: all 0.2s ease;
+}
+
+.header__user:hover,
+.header__user:focus-visible {
+  background: #f3f1ed;
+  border-color: #d5cfc6;
+}
+
+.header__profile-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 20;
+  width: 160px;
+  padding: 6px;
+  background: #ffffff;
+  border: 1px solid #ddd8d0;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(30, 35, 40, 0.15);
+}
+
+.header__profile-menu button {
+  display: block;
+  width: 100%;
+  padding: 11px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #333333;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.header__profile-menu button:hover {
+  background: #f3f1ed;
+}
+
+.header__profile-menu button:first-child::before {
+  content: "✎";
+  margin-right: 9px;
+}
+
+.header__profile-menu button:last-child {
+  color: #b44a4a;
+}
+
+.header__profile-menu button:last-child::before {
+  content: "↪";
+  margin-right: 9px;
+}
+
+.header__profile-menu button:last-child:hover {
+  background: #fff0f0;
+}
+
+/* DARK MODE */
+
+.app--dark .header__user {
+  background: #162338;
+  border-color: #2b3c55;
+  color: #e8edf5;
+}
+
+.app--dark .header__user:hover,
+.app--dark .header__user:focus-visible {
+  background: #1d2d45;
+  border-color: #405675;
+}
+
+.app--dark .header__profile-menu {
+  background: #111b2a;
+  border-color: #2b3c55;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+}
+
+.app--dark .header__profile-menu button {
+  color: #e8edf5;
+}
+
+.app--dark .header__profile-menu button:hover {
+  background: #1d2d45;
+}
+
+.app--dark .header__profile-menu button:last-child {
+  color: #f28b8b;
+}
+
+.app--dark .header__profile-menu button:last-child:hover {
+  background: #3a2025;
+}

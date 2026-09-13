@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { supabase } from "../../lib/supabase";
 
 const PLATFORM_NAMES = {
   discord: "Discord",
@@ -14,6 +15,7 @@ export default function RoomView({
 }) {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState(room.messages || []);
+  const [showDiscordInfo, setShowDiscordInfo] = useState(false);
 
   const chatRef = useRef(null);
 
@@ -30,22 +32,34 @@ export default function RoomView({
     }
   }, [messages]);
 
-  function handleSendMessage(event) {
-    event.preventDefault();
+  async function handleSendMessage(event) {
+  event.preventDefault();
 
-    if (!message.trim()) return;
+  if (!message.trim()) return;
 
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: `${room.id}-message-${Date.now()}`,
-        sender: currentUser,
-        text: message.trim(),
-      },
-    ]);
+  const newMessage = {
+    id: `${room.id}-message-${Date.now()}`,
+    sender: currentUser,
+    text: message.trim(),
+  };
 
-    setMessage("");
+  const updatedMessages = [...messages, newMessage];
+
+  const { error } = await supabase
+    .from("rooms")
+    .update({
+      messages: updatedMessages,
+    })
+    .eq("id", room.id);
+
+  if (error) {
+    console.error("Failed to send message:", error);
+    return;
   }
+
+  setMessages(updatedMessages);
+  setMessage("");
+}
 
   function handleDelete() {
     const confirmed = window.confirm(
@@ -55,6 +69,61 @@ export default function RoomView({
     if (confirmed) {
       onDelete();
     }
+  }
+
+  if (showDiscordInfo && connection?.platform === "discord") {
+    return (
+      <section className="room-view room-view--connection">
+        <div className="connection-card">
+          <button
+            type="button"
+            className="connection-card__back"
+            onClick={() => setShowDiscordInfo(false)}
+          >
+            ← Back to room
+          </button>
+
+          <div className="connection-card__icon">
+            💬
+          </div>
+
+          <p className="connection-card__eyebrow">
+            Study connection
+          </p>
+
+          <h1>Add the host on Discord</h1>
+
+          <p className="connection-card__description">
+            The host has shared their Discord username.
+            Add them on Discord so you can continue studying
+            together.
+          </p>
+
+          <div className="connection-card__username">
+            <span>Discord username</span>
+
+            <strong>{connection.value}</strong>
+          </div>
+
+          <div className="connection-card__tip">
+            <span>💡</span>
+
+            <p>
+              Search for this username in Discord and send
+              the host a friend request.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            className="connection-card__button"
+            onClick={() => setShowDiscordInfo(false)}
+          >
+            Back to study room
+          </button>
+        </div>
+      </section>
+    );
   }
 
   return (
@@ -106,7 +175,9 @@ export default function RoomView({
                   className="room-chat__message"
                   key={item.id}
                 >
-                  {showSender && <strong>{item.sender}</strong>}
+                  {showSender && (
+                    <strong>{item.sender}</strong>
+                  )}
 
                   <p>{item.text}</p>
                 </div>
@@ -163,13 +234,22 @@ export default function RoomView({
             </strong>.
           </p>
 
-          <a
-            href={connection.value}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Open {PLATFORM_NAMES[connection.platform]}
-          </a>
+          {connection.platform === "discord" ? (
+            <button
+              type="button"
+              onClick={() => setShowDiscordInfo(true)}
+            >
+              Connect on Discord
+            </button>
+          ) : (
+            <a
+              href={connection.value}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Open {PLATFORM_NAMES[connection.platform]}
+            </a>
+          )}
         </div>
       )}
     </section>

@@ -12,13 +12,19 @@ import {
   createRoom,
   deleteRoom,
 } from "../core/rooms.js";
+import { supabase } from "../lib/supabase.js";
 
 const MAX_RECENT_SUBJECTS = 5;
 const EMPTY_ROOM_TIMEOUT = 5 * 60 * 1000;
 
 export default function App() {
-  const [currentUser, setCurrentUser] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentUser, setCurrentUser] = useState(
+    localStorage.getItem("study-buddy-user") || ""
+  );
+
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    Boolean(localStorage.getItem("study-buddy-user"))
+  );
 
   const [rooms, setRooms] = useState(initialRooms);
   const [query, setQuery] = useState("");
@@ -39,23 +45,46 @@ export default function App() {
     rooms.find((room) => room.id === activeRoomId) || null;
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setRooms((prev) =>
-        prev.filter((room) => {
-          if (room.members.length > 0) {
-            return true;
-          }
+    async function loadRooms() {
+      const { data, error } = await supabase
+        .from("rooms")
+        .select("*")
+        .order("id");
 
-          if (!room.emptySince) {
-            return true;
-          }
+      if (error) {
+        console.error("Failed to load rooms:", error);
+        return;
+      }
 
-          return Date.now() - room.emptySince < EMPTY_ROOM_TIMEOUT;
-        })
+      setRooms(
+        data.map((room) => ({
+          ...room,
+          studyConnection: room.study_connection,
+          emptySince: room.empty_since,
+        }))
       );
-    }, 10000);
+    }
 
-    return () => clearInterval(interval);
+    loadRooms();
+
+    const channel = supabase
+      .channel("rooms-realtime")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "rooms",
+        },
+        () => {
+          loadRooms();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   function handleToggleTheme() {
@@ -78,16 +107,72 @@ export default function App() {
       return;
     }
 
+    localStorage.setItem("study-buddy-user", name);
     setCurrentUser(name);
     setIsLoggedIn(true);
   }
 
-  function handleJoin(room) {
+function handleEditProfile() {
+  const newName = window.prompt("Enter your new name:", currentUser);
+
+  if (!newName || !newName.trim()) {
+    return;
+  }
+
+  const trimmedName = newName.trim();
+
+  localStorage.setItem("study-buddy-user", trimmedName);
+  setCurrentUser(trimmedName);
+}
+
+function handleLogout() {
+  localStorage.removeItem("study-buddy-user");
+  setCurrentUser("");
+  setIsLoggedIn(false);
+  setActiveRoomId(null);
+}
+
+
+  async function handleJoin(room) {
+    const { data, error: fetchError } = await supabase
+      .from("rooms")
+      .select("*")
+      .eq("id", room.id)
+      .single();
+
+    if (fetchError) {
+      console.error("Failed to get latest room:", fetchError);
+      return;
+    }
+
+    const latestRoom = {
+      ...data,
+      studyConnection: data.study_connection,
+      emptySince: data.empty_since,
+    };
+
+    const updatedRoom = joinRoom(latestRoom, currentUser);
+
+    if (updatedRoom === latestRoom) {
+      return;
+    }
+
+    const { error } = await supabase
+      .from("rooms")
+      .update({
+        members: updatedRoom.members,
+        empty_since: updatedRoom.emptySince,
+      })
+      .eq("id", room.id);
+
+    if (error) {
+      console.error("Failed to join room:", error);
+      return;
+    }
+
     setRooms((prev) =>
       prev.map((item) =>
-        item.id === room.id
-          ? joinRoom(item, currentUser)
-          : item
+        item.id === room.id ? updatedRoom : item
       )
     );
 
@@ -100,22 +185,45 @@ export default function App() {
     }
   }
 
-  function handleLeave() {
+  async function handleLeave() {
     if (!activeRoom) return;
+
+    const updatedRoom = leaveRoom(activeRoom, currentUser);
+
+    const { error } = await supabase
+      .from("rooms")
+      .update({
+        members: updatedRoom.members,
+        empty_since: updatedRoom.emptySince,
+      })
+      .eq("id", activeRoom.id);
+
+    if (error) {
+      console.error("Failed to leave room:", error);
+      return;
+    }
 
     setRooms((prev) =>
       prev.map((item) =>
-        item.id === activeRoom.id
-          ? leaveRoom(item, currentUser)
-          : item
+        item.id === activeRoom.id ? updatedRoom : item
       )
     );
 
     setActiveRoomId(null);
   }
 
-  function handleDeleteRoom() {
+  async function handleDeleteRoom() {
     if (!activeRoom || activeRoom.host !== currentUser) {
+      return;
+    }
+
+    const { error } = await supabase
+      .from("rooms")
+      .delete()
+      .eq("id", activeRoom.id);
+
+    if (error) {
+      console.error("Failed to delete room:", error);
       return;
     }
 
@@ -135,7 +243,7 @@ export default function App() {
     setIsCreatingRoom(true);
   }
 
-  function handleCreateRoom(roomDetails) {
+  async function handleCreateRoom(roomDetails) {
     const room = createRoom({
       id: `room-${Date.now()}`,
       subject: query.trim().toUpperCase(),
@@ -145,6 +253,27 @@ export default function App() {
       description: roomDetails.description,
       studyConnection: roomDetails.studyConnection,
     });
+
+    const { error } = await supabase
+      .from("rooms")
+      .insert({
+        id: room.id,
+        subject: room.subject,
+        title: room.title,
+        description: room.description,
+        host: room.host,
+        type: room.type,
+        capacity: room.capacity,
+        members: room.members,
+        study_connection: room.studyConnection,
+        messages: [],
+        empty_since: null,
+      });
+
+    if (error) {
+      console.error("Failed to create room:", error);
+      return;
+    }
 
     setRooms((prev) => [...prev, room]);
     setIsCreatingRoom(false);
@@ -157,48 +286,48 @@ export default function App() {
     }
   }
 
-if (!isLoggedIn) {
-  return (
-    <div className={`app login-screen ${darkMode ? "app--dark" : ""}`}>
-      <button
-        type="button"
-        className="login-theme-toggle"
-        onClick={handleToggleTheme}
-      >
-        {darkMode ? "☀️ Light" : "🌙 Dark"}
-      </button>
-
-      <div className="login-card">
-        <h1>Study Buddy 📚</h1>
-
-        <p>Enter your name to get started.</p>
-
-        <input
-          type="text"
-          placeholder="Your name"
-          autoComplete="off"
-          value={currentUser}
-          onChange={(event) =>
-            setCurrentUser(event.target.value)
-          }
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              handleLogin();
-            }
-          }}
-        />
-
+  if (!isLoggedIn) {
+    return (
+      <div className={`app login-screen ${darkMode ? "app--dark" : ""}`}>
         <button
           type="button"
-          onClick={handleLogin}
-          disabled={!currentUser.trim()}
+          className="login-theme-toggle"
+          onClick={handleToggleTheme}
         >
-          Let's Study!
+          {darkMode ? "☀️ Light" : "🌙 Dark"}
         </button>
+
+        <div className="login-card">
+          <h1>Study Buddy 📚</h1>
+
+          <p>Enter your name to get started.</p>
+
+          <input
+            type="text"
+            placeholder="Your name"
+            autoComplete="off"
+            value={currentUser}
+            onChange={(event) =>
+              setCurrentUser(event.target.value)
+            }
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                handleLogin();
+              }
+            }}
+          />
+
+          <button
+            type="button"
+            onClick={handleLogin}
+            disabled={!currentUser.trim()}
+          >
+            Let's Study!
+          </button>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
   return (
     <div className={`app ${darkMode ? "app--dark" : ""}`}>
@@ -206,6 +335,8 @@ if (!isLoggedIn) {
         currentUser={currentUser}
         darkMode={darkMode}
         onToggleTheme={handleToggleTheme}
+        onEditProfile={handleEditProfile}
+        onLogout={handleLogout} 
       />
 
       {activeRoom ? (
@@ -227,8 +358,8 @@ if (!isLoggedIn) {
             <h1>Find your study buddy tonight! 📚</h1>
 
             <p>
-            Looking for someone to study with? 
-            Join an existing room or create your own — focused pair or full group, your call!
+              Looking for someone to study with?
+              Join an existing room or create your own — focused pair or full group, your call!
             </p>
           </div>
 
