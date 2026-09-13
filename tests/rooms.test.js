@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { occupancy, canJoin, joinRoom, createRoom } from "../core/rooms.js";
+import { occupancy, canJoin, joinRoom, createRoom } from "../src/core/rooms.js";
 
 const focusRoom = createRoom({ id: "r1", subject: "CALC101", hostId: "grace", type: "focus" });
 

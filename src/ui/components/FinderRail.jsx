@@ -1,10 +1,16 @@
 import React from "react";
 
-const YEARS = ["Year 1", "Year 2", "Year 3", "Year 4"];
+const QUICK_SUBJECTS = [
+  "COMP304E",
+  "CALC101",
+  "PHYS201",
+  "CS204",
+  "BIO110",
+  "CHEM101",
+  "ELEC200",
+];
 
 export default function FinderRail({
-  year,
-  setYear,
   query,
   setQuery,
   recentSubjects,
@@ -13,39 +19,48 @@ export default function FinderRail({
   return (
     <aside className="rail">
       <div className="rail__section">
-        <p className="rail__label">Your year</p>
-        <div className="rail__pills">
-          {YEARS.map((y) => (
-            <button
-              key={y}
-              className={`pill ${year === y ? "pill--active" : ""}`}
-              onClick={() => setYear(y)}
-            >
-              {y}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="rail__section">
         <p className="rail__label">Find your subject</p>
+
         <input
           className="rail__search"
           type="text"
-          placeholder="e.g. COMP304E"
+          placeholder="Type a subject..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
       </div>
 
+      <div className="rail__section">
+        <p className="rail__label">Browse Subjects</p>
+
+        <ul className="rail__recent">
+          {QUICK_SUBJECTS.map((subject) => (
+            <li key={subject}>
+              <button
+                type="button"
+                className="rail__recent-item"
+                onClick={() => onPickRecent(subject)}
+              >
+                {subject}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+
       {recentSubjects.length > 0 && (
         <div className="rail__section">
-          <p className="rail__label">Recently studied</p>
+          <p className="rail__label">Recently Searched</p>
+
           <ul className="rail__recent">
-            {recentSubjects.map((s) => (
-              <li key={s}>
-                <button className="rail__recent-item" onClick={() => onPickRecent(s)}>
-                  {s}
+            {recentSubjects.map((subject) => (
+              <li key={subject}>
+                <button
+                  type="button"
+                  className="rail__recent-item"
+                  onClick={() => onPickRecent(subject)}
+                >
+                  {subject}
                 </button>
               </li>
             ))}

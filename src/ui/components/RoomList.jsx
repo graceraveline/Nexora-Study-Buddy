@@ -1,20 +1,32 @@
 import React from "react";
 
-export default function RoomList({ rooms, onJoin, onStartRoom, query }) {
+export default function RoomList({
+  rooms,
+  onJoin,
+  onStartRoom,
+  query,
+}) {
   return (
     <section className="room-list">
       <div className="room-list__header">
-        <h2>Study rooms</h2>
-        <button onClick={onStartRoom}>
+        <div>
+          <p className="room-list__eyebrow">Available now</p>
+          <h2>Study rooms</h2>
+        </div>
+
+        <button type="button" onClick={onStartRoom}>
           Start a focus room
         </button>
       </div>
 
       {rooms.length === 0 ? (
         <div className="room-list__empty">
-          <p>No rooms found{query ? ` for "${query}"` : ""}.</p>
+          <p>
+            No rooms found{query ? ` for "${query}"` : ""}.
+          </p>
+
           {query && (
-            <button onClick={onStartRoom}>
+            <button type="button" onClick={onStartRoom}>
               Start one
             </button>
           )}
@@ -22,25 +34,48 @@ export default function RoomList({ rooms, onJoin, onStartRoom, query }) {
       ) : (
         <div className="room-list__items">
           {rooms.map((room) => {
-            const isFull = room.members.length >= room.capacity;
+            const isFull =
+              room.members.length >= room.capacity;
 
             return (
-              <article className="room-card" key={room.id}>
-                <div>
-                  <h3>{room.subject}</h3>
-                  <p>
-                    {room.type === "focus" ? "Focus room" : "Group discussion"}
+              <article
+                className="room-card"
+                key={room.id}
+              >
+                <div className="room-card__content">
+                  <div className="room-card__top">
+                    <h3>{room.subject}</h3>
+
+                    <span className="room-card__type">
+                      {room.type === "focus"
+                        ? "Focus"
+                        : "Discussion"}
+                    </span>
+                  </div>
+
+                  <h4 className="room-card__title">
+                    {room.title}
+                  </h4>
+
+                  <p className="room-card__description">
+                    {room.description}
                   </p>
-                  <span>
+
+                  <p className="room-card__host">
+                    Hosted by {room.host}
+                  </p>
+
+                  <span className="room-card__members">
                     {room.members.length}/{room.capacity} students
                   </span>
                 </div>
 
                 <button
+                  type="button"
                   onClick={() => onJoin(room)}
                   disabled={isFull}
                 >
-                  {isFull ? "Full" : "Join"}
+                  {isFull ? "Full" : "Join room"}
                 </button>
               </article>
             );
