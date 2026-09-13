@@ -102,6 +102,10 @@ studibudbud/
 
 ![Study Buddy Room Lists](assets/screenshots/room-lists.png)
 
+### Create a Study Room
+
+![Study Buddy Create Room](assets/screenshots/create-room.png)
+
 ### Study Room
 
 ![Study Buddy Study Room](assets/screenshots/study-room.png)
